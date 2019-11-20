@@ -10,64 +10,76 @@
     $.i18n = function(options){
         options = $.extend({}, {
             lang: 'en',
+            //json对象或文件路径
             data: '',
             sliceLang: false,
+            //异步请求地址
             url:'',
             ableLang:['zh','en'],
             is_langs:true
         }, options);
+        var langData = '';
         var langStore = langStore || {},
             lang = options.lang.indexOf('-') < 0 && !options.sliceLang ? options.lang : options.lang.slice(0, 2);
-        if( typeof options.data === 'object' ){
-            options.data = data;
-        } else {
-            if(options.data.match(/(.*)[\/\\]([^\/\\]+)\.(\w+)$/)){
-                var urlParts = options.data.match(/(.*)[\/\\]([^\/\\]+)\.(\w+)$/);
-                url = urlParts[1] + '/' + lang + '.' + urlParts[3];
-            }else{
-                if(options.url!=''){
-                    url = options.url;
+        //设置数据
+        var setData = function(){
+            console.log(options.lang);
+            if( typeof options.data === 'object' ){
+                //options.data = data;
+                langData = options.data;
+            } else if(typeof options.data === 'string') {
+                if(options.data.match(/(.*)[\/\\]([^\/\\]+)\.(\w+)$/)){
+                    var urlParts = options.data.match(/(.*)[\/\\]([^\/\\]+)\.(\w+)$/);
+                    url = urlParts[1] + '/' + options.lang + '.' + urlParts[3];
+                }else{
+                    if(options.url!=''){
+                        url = options.url;
+                    }
                 }
-            }
-            $.ajax({
-                url: url,
-                dataType: "json",
-                success: function(data) {
-                    //langStore = data;
-                    options.data = data;
-                },
-                error: function(error) {
-                    console.log(error);
-                    $.getJSON(urlParts[1] + '/' + lang + '.' + urlParts[3], function(data) {
+                $.ajax({
+                    url: url,
+                    dataType: "json",
+                    success: function(data) {
+                        langData = data;
                         //langStore = data;
-                        options.data = data;
-                    });
-                }
-            });
-        }
+                    },
+                    error: function(error) {
+                        $.getJSON(urlParts[1] + '/' + lang + '.' + urlParts[3], function(data) {
+                            //langStore = data;
+                            langData = data;
+                        });
+                    }
+                });
+            }
+        };
+        //验证设置语言
         var checkLang = function(){
             if(typeof options.lang == "string"){
                 if(options.ableLang.indexOf(options.lang)>=0) {
                     return true;
                 }
             }
-            console.info('langError',options.lang);
             return false;
         };
+        //获取待存储数据
         var getLangStore = function(){
             if(checkLang()){
                 if( options.is_langs){
-                    langStore = options.data[options.lang];
+                    if(langData[options.lang]){
+                        langStore = langData[options.lang];
+                    }else{
+                        langStore = langData;
+                    }
                 }else{
-                    langStore = options.data;
+                    langStore = langData;
                 }
             }
         };
+        //存储数据
         var storeData = function(data,cache){
             if(cache==undefined){
                 cache = true;
             }
-            console.log(cache);
             if(!data) return;
             if(cache){
                 if(window.localStorage) {
@@ -77,22 +89,19 @@
                     langStore = data;
                 }
             }else{
+                console.log(11);
                 localStorage.setItem( "langStore", JSON.stringify(data) );
                 langStore = data;
+                console.log(localStorage.getItem("langStore"));
             }
         };
-        if(window.localStorage) {
-            var localLangStore = localStorage.getItem("langStore");
-            storeData( localLangStore !== null ? JSON.parse(localLangStore) : langStore);
-        } else {
-            getLangStore();
-            storeData( langStore );
-        }
+
 
         this.getLang = function(){ return lang; };
         this.setLang = function(l){ lang = l; storeData(options.data[l]); };
         this.setLang = function(lang){
             options.lang = lang;
+            setData();
             getLangStore();
             storeData(langStore,false);
         };
@@ -107,6 +116,19 @@
             }
             document.title = this.getItem('title');
         };
+
+        setData();
+
+        if(window.localStorage) {
+            var localLangStore = localStorage.getItem("langStore");
+            storeData( localLangStore !== null ? JSON.parse(localLangStore) : langStore);
+        } else {
+            getLangStore();
+            storeData( langStore );
+        }
+
+        this.formatView();
+
         return this;
     };
 }(jQuery));

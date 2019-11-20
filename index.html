@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>测试</title>
-
 </head>
 <body>
     <div>
@@ -23,7 +22,10 @@
                     new_lang = self.now_lang;
                 }
                 var lang = $.i18n({
+                    //文件加载
+                    //data:"/languages/*.js",
                     lang:new_lang,
+                    //路径加载
                     url:"php/getlangs.php"
                 });
                 self.now_lang = new_lang;
@@ -33,7 +35,6 @@
         $(document).ready(function(){
            var lang =  localStorage.getItem("lang");
             language_pack.loadProperties(lang);
-            language_pack.lang.formatView();
             $('#change_language').click(function(){
                 lang =  localStorage.getItem("lang");
                 if(lang=='zh'){
