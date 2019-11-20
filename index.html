@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+
+</head>
+<body>
+    <div>
+        <h1 data-lang="test1">标题</h1>
+    </div>
+    <a id="change_language" data-lang="change">切换</a>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/localStorage/2.0.1/localStorage-debug.min.js"></script>
+    <script src="js/jquery.i18n.js"></script>
+    <script>
+        var language_pack = {
+            lang: new Object(),
+            now_lang:'zh',
+            loadProperties:function(new_lang){
+                var self = this;
+                if(new_lang == undefined){
+                    new_lang = self.now_lang;
+                }
+                var lang = $.i18n({
+                    lang:new_lang,
+                    url:"php/getlangs.php"
+                });
+                self.now_lang = new_lang;
+                self.lang=lang;
+            }
+        };
+        $(document).ready(function(){
+           var lang =  localStorage.getItem("lang");
+            language_pack.loadProperties(lang);
+            language_pack.lang.formatView();
+            $('#change_language').click(function(){
+                lang =  localStorage.getItem("lang");
+                if(lang=='zh'){
+                    lang = 'en';
+                }else{
+                    lang = 'zh';
+                }
+                localStorage.setItem("lang", lang);
+                language_pack.lang.setLang(lang);
+                language_pack.lang.formatView();
+            });
+        });
+
+    </script>
+</body>
+</html>
