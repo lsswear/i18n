@@ -23,7 +23,7 @@
             lang = options.lang.indexOf('-') < 0 && !options.sliceLang ? options.lang : options.lang.slice(0, 2);
         //设置数据
         var setData = function(){
-            console.log(options.lang);
+            //console.log(options.lang);
             if( typeof options.data === 'object' ){
                 //options.data = data;
                 langData = options.data;
@@ -38,12 +38,19 @@
                 }
                 $.ajax({
                     url: url,
+                    type: "GET",
                     dataType: "json",
                     success: function(data) {
                         langData = data;
                         //langStore = data;
                     },
-                    error: function(error) {
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        // 状态码
+                        console.log(XMLHttpRequest.status);
+                        // 状态
+                        console.log(XMLHttpRequest.readyState);
+                        // 错误信息
+                        console.log(textStatus);
                         $.getJSON(urlParts[1] + '/' + lang + '.' + urlParts[3], function(data) {
                             //langStore = data;
                             langData = data;
