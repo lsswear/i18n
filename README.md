@@ -3,11 +3,12 @@ js 多语言处理
 
 数据结构 json:
 
-*en..js*
+*/language/en.js*
 ```
     {
+        "title":"title"
         "str1":"11",
-        "test":"TEST",
+        "test":"TEST"
     }
 ```
 
@@ -16,11 +17,11 @@ js 多语言处理
 ```
     "en":{
         "str1":"11",
-        "test":"TEST",
+        "test":"TEST"
     }
     "zh":{
         "str1":"一一",
-        "test":"测试",
+        "test":"测试"
     }
 ```
 
